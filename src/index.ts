@@ -1,12 +1,12 @@
-import { Command, flags } from "@oclif/command";
+import { Command, Flags } from "@oclif/core";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { resolve, dirname } from "path";
-import * as glob from "glob";
-import * as isGlob from "is-glob";
+import { globSync } from "glob";
+import isGlob from "is-glob";
 
 const fileReducer = (acc: string[], cur: string): string[] => {
   if (isGlob(cur)) {
-    acc = [...acc, ...glob.sync(cur).map((item) => resolve(item))];
+    acc = [...acc, ...globSync(cur).map((item) => resolve(item))];
   } else {
     acc = [...acc, resolve(cur)];
   }
@@ -22,18 +22,17 @@ class PrismaMergeSchema extends Command {
 
   static flags = {
     // add --version flag to show CLI version
-    version: flags.version({ char: "v" }),
-    help: flags.help({ char: "h" }),
-    datasource: flags.string({ char: "d", required: true, multiple: true }),
-    decorators: flags.string({ char: "e", multiple: true }),
-    outputFile: flags.string({ char: "o" }),
-    // flag with a value (-n, --name=VALUE)
+    version: Flags.version({ char: "v" }),
+    help: Flags.help({ char: "h" }),
+    datasource: Flags.string({ char: "d", required: true, multiple: true }),
+    decorators: Flags.string({ char: "e", multiple: true }),
+    outputFile: Flags.string({ char: "o" }),
   };
 
   applyExtensions = (str: string, extendsDecorations: any[] = []) => {
     extendsDecorations.forEach((extension) => {
       const [_, extendsTo, extendsWith] = extension.match(
-        /extends ([^ ]* [^ ]*) \{([^}]*)/
+        /extends ([^ ]* [^ ]*) \{([^}]*)/,
       ) as string[];
       const extendsToRegExp = new RegExp(`${extendsTo}[^}]*}`);
       const extendsToNext = str
@@ -48,7 +47,7 @@ class PrismaMergeSchema extends Command {
   applyRemovals = (str: string, removeDecorations: any[] = []) => {
     removeDecorations.forEach((extension) => {
       let [_, modelToRemoveFrom, itemsToRemove]: any = extension.match(
-        /remove ([^ ]* [^ ]*) \{([^}]*)/
+        /remove ([^ ]* [^ ]*) \{([^}]*)/,
       ) as string[];
 
       itemsToRemove = itemsToRemove
@@ -89,7 +88,7 @@ class PrismaMergeSchema extends Command {
   applyReplacements = (str: string, replaceDecorations: any[] = []) => {
     replaceDecorations.forEach((extension) => {
       let [_, modelToReplaceIn, replacements]: any = extension.match(
-        /replaces ([^ ]* [^ ]*) \{([^}]*)/
+        /replaces ([^ ]* [^ ]*) \{([^}]*)/,
       ) as string[];
 
       replacements = replacements
@@ -118,14 +117,14 @@ class PrismaMergeSchema extends Command {
 
       // find the index of the model to replace in
       const modelIndex = leftTrimmed.findIndex((line) =>
-        line.startsWith(modelToReplaceIn)
+        line.startsWith(modelToReplaceIn),
       );
 
       if (modelIndex > -1) {
         for (const replacement of replacements) {
           const lineIndex = leftTrimmed.indexOf(
             replacement.linePrefix,
-            modelIndex
+            modelIndex,
           );
           if (lineIndex > -1) {
             splitStr[lineIndex] = replacement.content;
@@ -159,7 +158,7 @@ class PrismaMergeSchema extends Command {
   };
 
   async run() {
-    const { args, flags } = this.parse(PrismaMergeSchema);
+    const { flags } = await this.parse(PrismaMergeSchema);
     let decoratorFiles: any = [];
     let decoratorFileAsString: string = "";
     const datasourceFiles = flags.datasource.reduce(fileReducer, []);
@@ -175,14 +174,14 @@ class PrismaMergeSchema extends Command {
 
     const datasourceFileAsString = datasourceFiles.reduce(
       fileWriterReducer,
-      ""
+      "",
     );
 
     const outputPath = resolve(flags.outputFile || "./prisma/schema.prisma");
     const outputDir = dirname(outputPath);
     if (!existsSync(outputDir)) {
       this.error(
-        `Directory ${outputDir} does not exist. If you don't specify --output-file the CLI defaults to ./prisma/schema.prisma`
+        `Directory ${outputDir} does not exist. If you don't specify --output-file the CLI defaults to ./prisma/schema.prisma`,
       );
     }
 
