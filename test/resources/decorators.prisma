@@ -1,0 +1,3 @@
+replaces model studm_koop_hs {
+  studienmoeglichkeiten   studienmoeglichkeiten  @relation(fields: [studienmoeglichkeit], references: [laufnummer], onDelete: NoAction, onUpdate: NoAction)
+}

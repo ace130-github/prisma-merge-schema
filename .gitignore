@@ -2,6 +2,7 @@
 *-error.log
 /.nyc_output
 /coverage
+/test/resources/merged.prisma
 /dist
 /lib
 /package-lock.json

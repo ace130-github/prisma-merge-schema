@@ -50,6 +50,7 @@
   },
   "repository": "smcelhinney/prisma-merge-schema",
   "scripts": {
+    "merge-test": "node bin/run --datasource test/resources/base.prisma --decorators test/resources/decorators.prisma --outputFile test/resources/merged.prisma",
     "posttest": "eslint .",
     "prepack": "rm -rf lib && tsc -b && oclif readme",
     "test": "c8 mocha --forbid-only \"test/**/*.test.ts\"",

@@ -1,0 +1,20 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../../dist/prisma/client-hsk"
+  previewFeatures = []
+  binaryTargets   = ["native"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("HSK_DB_URL")
+}
+
+model studm_koop_hs {
+  tid                   Int                    @id(map: "pk_studm_koop_hs") @default(autoincrement())
+  studienmoeglichkeiten studienmoeglichkeiten? @relation(fields: [studienmoeglichkeit], references: [laufnummer], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model ok {
+  id Int @id @default(autoincrement())
+}

@@ -43,6 +43,8 @@ module.exports = [
       ...tseslint.configs.recommended.rules,
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-require-imports": "off",
+      // Chai's `.to.be.true` etc. are property assertions that look like unused expressions
+      "@typescript-eslint/no-unused-expressions": "off",
     },
   },
 ];
